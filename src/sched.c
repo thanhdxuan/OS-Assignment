@@ -2,7 +2,6 @@
 #include "queue.h"
 #include "sched.h"
 #include <pthread.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 static struct queue_t ready_queue;
@@ -44,11 +43,41 @@ void init_scheduler(void) {
  *  We implement stateful here using transition technique
  *  State representation   prio = 0 .. MAX_PRIO, curr_slot = 0..(MAX_PRIO - prio)
  */
+int prioStates[MAX_PRIO];
+void init_prioStates(void) {
+	int i;
+	for (i = 0; i < MAX_PRIO; i++) {
+		prioStates[i] = 0;
+	}
+}
+int chooseQueue(void) {
+	for (int i = 0; i < MAX_PRIO; i++) {
+		if (mlq_ready_queue[i].size != 0 && prioStates[i] < MAX_PRIO - i) {
+			prioStates[i]++;
+			return i;
+		}
+	}
+	//Reset state
+	int k = -1;
+	for (int i = 0; i < MAX_PRIO; i++) {
+		if (mlq_ready_queue[i].size != 0) {
+			prioStates[i] = 0;
+			if (k == -1) {
+				k = i;
+				prioStates[i]++;
+			}
+		}
+	}
+	return k;
+}
 struct pcb_t * get_mlq_proc(void) {
 	struct pcb_t * proc = NULL;
-	/*TODO: get a process from PRIORITY [ready_queue].
-	 * Remember to use lock to protect the queue.
-	 * */
+	pthread_mutex_lock(&queue_lock);
+	if (queue_empty() == -1) {;
+		int qIndex = chooseQueue();
+		if (qIndex != -1) proc = dequeue(&mlq_ready_queue[qIndex]);
+	}
+	pthread_mutex_unlock(&queue_lock);
 	return proc;	
 }
 

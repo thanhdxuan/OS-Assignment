@@ -11,6 +11,7 @@
 int queue_empty(void);
 
 void init_scheduler(void);
+int init_prioStates(void);
 void finish_scheduler(void);
 
 /* Get the next process from ready queue */

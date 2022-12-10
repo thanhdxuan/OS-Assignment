@@ -34,8 +34,8 @@ struct pcb_t * load(const char * path) {
 	struct pcb_t * proc = (struct pcb_t * )malloc(sizeof(struct pcb_t));
 	proc->pid = avail_pid;
 	avail_pid++;
-	proc->seg_table =
-		(struct seg_table_t*)malloc(sizeof(struct seg_table_t));
+	proc->page_table =
+		(struct page_table_t*)malloc(sizeof(struct page_table_t));
 	proc->bp = PAGE_SIZE;
 	proc->pc = 0;
 

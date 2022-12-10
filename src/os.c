@@ -36,12 +36,13 @@ static void * cpu_routine(void * args) {
 	struct pcb_t * proc = NULL;
 	while (1) {
 		/* Check the status of current process */
+		// printf("hellooo");
 		if (proc == NULL) {
 			/* No process is running, the we load new process from
 		 	* ready queue */
 			proc = get_proc();
 			if (proc == NULL) {
-                           next_slot(timer_id);
+                           // next_slot(timer_id);
                            continue; /* First load failed. skip dummy load */
                         }
 		}else if (proc->pc == proc->code->size) {
@@ -164,7 +165,7 @@ int main(int argc, char * argv[]) {
 
 	/* Init scheduler */
 	init_scheduler();
-
+	init_prioStates();
 	/* Run CPU and loader */
 	pthread_create(&ld, NULL, ld_routine, (void*)ld_event);
 	for (i = 0; i < num_cpus; i++) {
